@@ -6,7 +6,6 @@
 
 package com.jjhsoftware.memoryversechallenge;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
@@ -18,11 +17,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+//import com.google.android.gms.ads.AdRequest;
+//import com.google.android.gms.ads.AdView;
 
 import java.util.Random;
 
@@ -34,16 +34,16 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btnSubmit;
     private TextView titleHeader;
-    private TextView titleEngNIV;
-    private TextView contentEngNIV;
+    private TextView verseTitle;
+    private TextView verseContent;
     private Menu menu;
     private int lastVerseId = -1;
-
+    private int totalScore = 0;
 
     // Quiz timer
     ProgressBar mProgressBar;
     CountDownTimer mCountDownTimer;
-    int timerValue = 0;
+    int timerValue = 5;
 
     public static final String TAG = "MainActivity";
 
@@ -54,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
 
         /* SECTION: ADS */
 
-        try {
-            mAdView = (AdView) findViewById(R.id.adView);
-            AdRequest.Builder adRequest = new AdRequest.Builder();
-            adRequest.addTestDevice("E0672EF9205508F55913C27654ED0CE9");
-            mAdView.loadAd(adRequest.build());
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            mAdView = (AdView) findViewById(R.id.adView);
+//            AdRequest.Builder adRequest = new AdRequest.Builder();
+//            adRequest.addTestDevice("E0672EF9205508F55913C27654ED0CE9");
+//            mAdView.loadAd(adRequest.build());
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//        }
 
         // Set icon in action bar
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
 
                 // Get View Ids
                 titleHeader = (TextView) findViewById(R.id.titleHeader);
-                titleEngNIV = (TextView) findViewById(R.id.titleEngNIV);
-                contentEngNIV = (TextView) findViewById(R.id.contentEngNIV);
+                verseTitle = (TextView) findViewById(R.id.titleEngNIV);
+                verseContent = (TextView) findViewById(R.id.contentEngNIV);
 
                 // Generate random number for random Bible verse
                 Random rand = new Random();
@@ -96,37 +96,40 @@ public class MainActivity extends AppCompatActivity {
                 lastVerseId = index;
 
                 // Update the view with the new Bible Verse
-                titleEngNIV.setText(R.string.NIV_title);
+                verseTitle.setText(R.string.NIV_title);
                 titleHeader.setText(BibleV1.versesQuery.get(index).name);
-                contentEngNIV.setText(BibleV1.versesQuery.get(index).contentEnglish);
+                verseContent.setText(BibleV1.versesQuery.get(index).contentEnglish);
 
                 // The Quiz timer before replacing the verse with blanks
 
-                mProgressBar = (ProgressBar)findViewById(R.id.progressbar);
+                mProgressBar = (ProgressBar)findViewById(R.id.quizTimer);
                 mProgressBar.setProgress(timerValue);
                 mCountDownTimer = new CountDownTimer(5000,1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
-                        timerValue --;  // TODO: Make this smoother
+                        timerValue--;  // TODO: Make this smoother
                         mProgressBar.setProgress(timerValue);
                     }
 
                     @Override
                     public void onFinish() {
+                        // Reset progress bar
+                        timerValue = 5;
+
                         // Generate the quiz item
-                        QuizItem question = generateQuestion(
+                        final QuizItem question = generateQuestion(
                                 titleHeader.getText().toString(),
-                                contentEngNIV.getText().toString());
+                                verseContent.getText().toString());
 
                         // Replace the strings with the corresponding question
                         // Don't do anything with verse title as of now
                         //titleHeader.setText();
-                        contentEngNIV.setText(question.question);
+                        verseContent.setText(question.question);
 
                         // Fire the timer again. This time, the user should input
                         // his/her answers
 
-                        mProgressBar = (ProgressBar)findViewById(R.id.progressbar);
+                        mProgressBar = (ProgressBar)findViewById(R.id.quizTimer);
                         mProgressBar.setProgress(timerValue);
                         mCountDownTimer = new CountDownTimer(5000,1000) {
                             @Override
@@ -137,6 +140,11 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onFinish() {
+                                String userAnswer = ((EditText)findViewById(R.id.answer)).toString();
+                                if (userAnswer == question.answer) {
+                                    totalScore ++;
+
+                                }
 
                             }
                         };
@@ -145,7 +153,8 @@ public class MainActivity extends AppCompatActivity {
                 };
                 mCountDownTimer.start();
 
-        });
+                }
+    });
     }
 
     @Override
@@ -173,12 +182,6 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.menu_about) {
             // Shows information dialog
             showAboutDialog();
-        }
-        else if (id == R.id.menu_verse_list) {
-            // Shows information dialog
-            Intent intent = new Intent(this, VerseListActivity.class);
-            startActivity(intent);
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -247,28 +250,28 @@ public class MainActivity extends AppCompatActivity {
 
     /************************* ADS ******************************/
 
-    private AdView mAdView;
-    @Override
-    public void onPause() {
-        if (mAdView != null) {
-            mAdView.pause();
-        }
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mAdView != null) {
-            mAdView.resume();
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mAdView != null) {
-            mAdView.destroy();
-        }
-        super.onDestroy();
-    }
+//    private AdView mAdView;
+//    @Override
+//    public void onPause() {
+//        if (mAdView != null) {
+//            mAdView.pause();
+//        }
+//        super.onPause();
+//    }
+//
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        if (mAdView != null) {
+//            mAdView.resume();
+//        }
+//    }
+//
+//    @Override
+//    public void onDestroy() {
+//        if (mAdView != null) {
+//            mAdView.destroy();
+//        }
+//        super.onDestroy();
+//    }
 }

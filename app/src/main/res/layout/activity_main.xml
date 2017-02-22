@@ -32,7 +32,30 @@
                     android:layout_marginTop="20dp"
                     android:textSize="25sp" />
 
-                <!--NIV ENGLISH-->
+            <!-- SCORE -->
+
+            <LinearLayout android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/scoreContainer"
+                android:layout_gravity="right"
+                android:layout_marginRight="20dp">
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/scoreTitle"
+                    android:textColor="@color/colorText"
+                    android:text="Score:" />
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/scoreValue"
+                    android:textColor="@color/colorHeader"
+                    android:layout_gravity="right"
+                    android:text="0" />
+            </LinearLayout>
+
+                <!-- TIMER -->
 
                 <ProgressBar
                     style="@android:style/Widget.ProgressBar.Horizontal"
@@ -46,8 +69,10 @@
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp" />
 
+                <!-- NIV ENGLISH -->
+
                 <TextView
-                    android:id="@+id/titleFilMBB"
+                    android:id="@+id/verseTitle"
                     android:text="@string/prayer"
                     android:textColor="@color/colorText"
                     android:layout_width="fill_parent"
@@ -59,7 +84,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
-                    android:id="@+id/contentFilMBB"
+                    android:id="@+id/verseContent"
                     android:text="@string/prayer_content"
                     android:textColor="@color/colorText"
                     android:layout_width="wrap_content"
@@ -79,7 +104,6 @@
                     android:layout_gravity="center"
                     android:textAlignment="center"
                     android:textColor="#0d0c0c"
-                    android:margin="15dp"
                     android:textColorHint="#F7DC6F"
                     android:layout_marginBottom="15dp"
                     android:layout_marginLeft="30dp"
@@ -101,7 +125,7 @@
         </ScrollView>
 
     <!-- ADMOBS -->
-    <com.google.android.gms.ads.AdView
+    <!--<com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -109,5 +133,5 @@
         ads:adUnitId="@string/banner_ad_unit_id"
         android:layout_alignParentBottom="true">
     </com.google.android.gms.ads.AdView>
-
+    -->
 </RelativeLayout>
