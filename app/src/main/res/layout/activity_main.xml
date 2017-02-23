@@ -100,7 +100,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/answer"
+                    android:id="@+id/answer1"
                     android:layout_gravity="center"
                     android:textAlignment="center"
                     android:textColor="#0d0c0c"
@@ -108,7 +108,22 @@
                     android:layout_marginBottom="15dp"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
-                    android:hint="Your answer"
+                    android:hint="Your answer for 1st blank"
+                    android:backgroundTint="#FFFFFF"
+                    android:textIsSelectable="true" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/answer2"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:textColor="#0d0c0c"
+                    android:textColorHint="#F7DC6F"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:hint="Your answer for 2nd blank"
                     android:backgroundTint="#FFFFFF"
                     android:textIsSelectable="true" />
 

@@ -6,6 +6,7 @@
 
 package com.jjhsoftware.memoryversechallenge;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 //import com.google.android.gms.ads.AdRequest;
 //import com.google.android.gms.ads.AdView;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import com.jjhsoftware.memoryversechallenge.bible.BibleV1;
@@ -36,9 +38,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView titleHeader;
     private TextView verseTitle;
     private TextView verseContent;
+    private TextView scoreValue;
     private Menu menu;
     private int lastVerseId = -1;
     private int totalScore = 0;
+    private final int COUNT_DOWN_TIMER = 5;
+    private int blankCount = 2;
 
     // Quiz timer
     ProgressBar mProgressBar;
@@ -114,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onFinish() {
                         // Reset progress bar
-                        timerValue = 5;
+                        timerValue = COUNT_DOWN_TIMER;
 
                         // Generate the quiz item
                         final QuizItem question = generateQuestion(
@@ -134,18 +139,27 @@ public class MainActivity extends AppCompatActivity {
                         mCountDownTimer = new CountDownTimer(5000,1000) {
                             @Override
                             public void onTick(long millisUntilFinished) {
-                                timerValue --;  // TODO: Make this smoother
+                                timerValue--;  // TODO: Make this smoother
                                 mProgressBar.setProgress(timerValue);
                             }
 
                             @Override
                             public void onFinish() {
-                                String userAnswer = ((EditText)findViewById(R.id.answer)).toString();
-                                if (userAnswer == question.answer) {
+                                String userAnswer1 = ((EditText)findViewById(R.id.answer1)).toString();
+                                String userAnswer2 = ((EditText)findViewById(R.id.answer1)).toString();
+
+                                if (userAnswer1 == question.answers[0] && userAnswer2 == question.answers[1]) {
+                                    verseContent = (TextView) findViewById(R.id.scoreValue);
                                     totalScore ++;
-
+                                    verseContent.setText(totalScore);
+                                    timerValue = COUNT_DOWN_TIMER;
                                 }
-
+                                else {
+                                    // Load home screen with game over
+                                    Intent intent = new Intent(MainActivity.this, HomeScreen.class);
+                                    intent.putExtra("isGameOver", true);
+                                    startActivity(intent);
+                                }
                             }
                         };
                         mCountDownTimer.start();
@@ -159,18 +173,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        this.menu = menu;
-
-        // Update the menu
-        invalidateOptionsMenu();
-        MenuItem menuHome = menu.findItem(R.id.menu_home);
-        MenuItem menuList = menu.findItem(R.id.menu_verse_list);
-        menuHome.setVisible(false);
-        menuList.setVisible(true);
-
         return true;
     }
 
@@ -220,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
         * This class will hold the question and answer for each item
         * */
         String question;
-        String answer;
+        String[] answers;
     }
 
     private QuizItem generateQuestion(String title, String verse) {
@@ -233,17 +235,38 @@ public class MainActivity extends AppCompatActivity {
         // extract words in verse
         String[] words = verse.split(" ");
 
-        // choose random index from these words
-        Random rand = new Random();
-        int index = rand.nextInt(words.length);
+        // indexes that are already used
+        ArrayList<Integer> usedIndexes = new ArrayList<Integer>();
 
-        // Choose the word as the answer
         QuizItem quizItem = new QuizItem();
-        quizItem.answer = words[index];
 
-        // Replace answer with blank
-        words[index] = "____";
-        quizItem.question = TextUtils.join(" ", words);
+        // Generate quiz questions and answers
+        int i = 0;
+        int retries = 0;
+        while(i<blankCount) {
+
+            // choose random index from these words
+            Random rand = new Random();
+            int index = rand.nextInt(words.length);
+
+            if (!usedIndexes.contains(index)) {
+
+                // Choose the word as the answer
+                quizItem.answers[i] = words[index];
+
+                // Replace answer with blank
+                words[index] = "____";
+                quizItem.question = TextUtils.join(" ", words);
+
+                usedIndexes.add(index);
+                i++;
+            }
+            if (retries > 10) {
+                // this will most likely not happen
+                break;
+            }
+        }
+
 
         return quizItem;
     }

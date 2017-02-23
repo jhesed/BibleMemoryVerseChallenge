@@ -7,4 +7,5 @@
     <!--373D3F-->
     <color name="colorHeader">#EFD469</color>
     <color name="colorText">#F2F3F4</color>
+    <color name="colorGameOver">#f75f47</color>
 </resources>
