@@ -82,6 +82,12 @@ public class HomeScreen extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        this.menu = menu;
+
+        // Update the menu
+        invalidateOptionsMenu();
         return true;
     }
 

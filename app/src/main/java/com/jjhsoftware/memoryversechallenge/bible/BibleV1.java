@@ -10,7 +10,7 @@ import com.jjhsoftware.memoryversechallenge.models.Verse;
  */
 public class BibleV1 {
     public final static ArrayList<Verse> versesQuery = new ArrayList<Verse>();
-    public static final int VERSE_COUNT = 32 ;  // hardcoded for optimization. Fix this everytime
+    public static int VERSE_COUNT = 32 ;  // hardcoded for optimization. Fix this everytime
     public static final double VERSION = 1.0;  // support for future updates
 
     public static ArrayList<Verse> generateQuery() {

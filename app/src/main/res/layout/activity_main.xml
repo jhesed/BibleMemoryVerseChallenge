@@ -40,13 +40,13 @@
                 android:id="@+id/scoreContainer"
                 android:layout_gravity="right"
                 android:layout_marginRight="20dp">
-                <EditText
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/scoreTitle"
                     android:textColor="@color/colorText"
                     android:text="Score:" />
-                <EditText
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/scoreValue"
@@ -63,8 +63,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/quizTimer"
                     android:layout_gravity="center_horizontal"
-                    android:max="5"
-                    android:progress="5"
+                    android:max="10"
+                    android:progress="7"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp" />
@@ -109,6 +109,7 @@
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:hint="Your answer for 1st blank"
+                    android:visibility="gone"
                     android:backgroundTint="#FFFFFF"
                     android:textIsSelectable="true" />
 
@@ -123,6 +124,7 @@
                     android:layout_marginBottom="15dp"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
+                    android:visibility="gone"
                     android:hint="Your answer for 2nd blank"
                     android:backgroundTint="#FFFFFF"
                     android:textIsSelectable="true" />

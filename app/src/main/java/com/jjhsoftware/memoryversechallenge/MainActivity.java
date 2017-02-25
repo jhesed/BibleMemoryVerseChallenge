@@ -12,6 +12,7 @@ import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,16 +40,18 @@ public class MainActivity extends AppCompatActivity {
     private TextView verseTitle;
     private TextView verseContent;
     private TextView scoreValue;
+    private TextView answerField1;
+    private TextView answerField2;
     private Menu menu;
     private int lastVerseId = -1;
     private int totalScore = 0;
-    private final int COUNT_DOWN_TIMER = 10;
+    private final int COUNT_DOWN_TIMER = 7;
     private int blankCount = 2;
 
     // Quiz timer
     ProgressBar mProgressBar;
     CountDownTimer mCountDownTimer;
-    int timerValue = 5;
+    int timerValue = COUNT_DOWN_TIMER;
 
     public static final String TAG = "MainActivity";
 
@@ -78,10 +81,18 @@ public class MainActivity extends AppCompatActivity {
         // Sets Random Button
         btnSubmit = (Button) findViewById(R.id.buttonRandom) ;
 
+        while (BibleV1.VERSE_COUNT > 0) {
+            play();
+        }
+    }
+
+    private void play() {
         // Get View Ids
         titleHeader = (TextView) findViewById(R.id.titleHeader);
         verseTitle = (TextView) findViewById(R.id.verseTitle);
         verseContent = (TextView) findViewById(R.id.verseContent);
+        answerField1 = (EditText) findViewById(R.id.answer1);
+        answerField2 = (EditText) findViewById(R.id.answer2);
 
         // Generate random number for random Bible verse
         Random rand = new Random();
@@ -94,15 +105,26 @@ public class MainActivity extends AppCompatActivity {
         lastVerseId = index;
 
         // Update the view with the new Bible Verse
-        verseTitle.setText(R.string.NIV_title);
-        titleHeader.setText(BibleV1.versesQuery.get(index).name);
+        titleHeader.setText(R.string.NIV_title);
+        verseTitle.setText(BibleV1.versesQuery.get(index).name);
         verseContent.setText(BibleV1.versesQuery.get(index).contentEnglish);
+
+        // Hide first the answer fields and sumbit button while the progress bar is ticking
+        answerField1.setVisibility(View.GONE);
+        answerField2.setVisibility(View.GONE);
+        btnSubmit.setVisibility(View.GONE);
+
+        // Remove verse from questions, and update the count
+        BibleV1.VERSE_COUNT--;
+        BibleV1.versesQuery.remove(lastVerseId);
 
         // The Quiz timer before replacing the verse with blanks
 
-        mProgressBar = (ProgressBar)findViewById(R.id.quizTimer);
+        mProgressBar = (ProgressBar) findViewById(R.id.quizTimer);
         mProgressBar.setProgress(timerValue);
-        mCountDownTimer = new CountDownTimer(5000,1000) {
+        mCountDownTimer = new CountDownTimer(COUNT_DOWN_TIMER * 1000,
+                (COUNT_DOWN_TIMER * 1000) / 10) {
+
             @Override
             public void onTick(long millisUntilFinished) {
                 timerValue--;  // TODO: Make this smoother
@@ -111,54 +133,53 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                // Reset progress bar
-                timerValue = COUNT_DOWN_TIMER;
+
+                // Hide progress bar first
+                mProgressBar.setVisibility(View.GONE);
 
                 // Generate the quiz item
                 final QuizItem question = generateQuestion(
-                        titleHeader.getText().toString(),
+                        verseTitle.getText().toString(),
                         verseContent.getText().toString());
 
                 // Replace the strings with the corresponding question
                 // Don't do anything with verse title as of now
                 //titleHeader.setText();
+
                 verseContent.setText(question.question);
 
-                // Fire the timer again. This time, the user should input
-                // his/her answers
+                // Show the answer fields and the buttons
+                answerField1.setVisibility(View.VISIBLE);
+                answerField2.setVisibility(View.VISIBLE);
+                btnSubmit.setVisibility(View.VISIBLE);
+                answerField1.setFocusable(true);
 
-                mProgressBar = (ProgressBar)findViewById(R.id.quizTimer);
-                mProgressBar.setProgress(timerValue);
-                mCountDownTimer = new CountDownTimer(10000,500) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        timerValue--;  // TODO: Make this smoother
-                        mProgressBar.setProgress(timerValue);
-                    }
+                // Check answers on submit button
+
+                btnSubmit.setOnClickListener(new View.OnClickListener() {
 
                     @Override
-                    public void onFinish() {
+                    public void onClick(View view) {
                         checkAnswer(question);
+
+                        // Reset progress bar
+                        timerValue = COUNT_DOWN_TIMER;
                     }
-                };
-                mCountDownTimer.start();
+                });
+
             }
         };
         mCountDownTimer.start();
-
-        /* SECTION: Events */
-
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-//                checkAnswer(question);
-            }
-        });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        this.menu = menu;
+
+        // Update the menu
+        invalidateOptionsMenu();
         return true;
     }
 
@@ -178,11 +199,12 @@ public class MainActivity extends AppCompatActivity {
         String userAnswer1 = ((EditText)findViewById(R.id.answer1)).toString();
         String userAnswer2 = ((EditText)findViewById(R.id.answer1)).toString();
 
-        if (userAnswer1 == question.answers[0] && userAnswer2 == question.answers[1]) {
+        if (userAnswer1 == question.answers.get(0) && userAnswer2 == question.answers.get(1)) {
             verseContent = (TextView) findViewById(R.id.scoreValue);
             totalScore ++;
-            verseContent.setText(totalScore);
+            scoreValue.setText(totalScore);
             timerValue = COUNT_DOWN_TIMER;
+
         }
         else {
             // Load home screen with game over
@@ -224,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         * This class will hold the question and answer for each item
         * */
         String question;
-        String[] answers;
+        ArrayList<String> answers = new ArrayList<String>();
     }
 
     private QuizItem generateQuestion(String title, String verse) {
@@ -245,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
         // Generate quiz questions and answers
         int i = 0;
         int retries = 0;
+
         while(i<blankCount) {
 
             // choose random index from these words
@@ -254,10 +277,11 @@ public class MainActivity extends AppCompatActivity {
             if (!usedIndexes.contains(index)) {
 
                 // Choose the word as the answer
-                quizItem.answers[i] = words[index];
+                quizItem.answers.add(words[index]);
 
                 // Replace answer with blank
                 words[index] = "____";
+
                 quizItem.question = TextUtils.join(" ", words);
 
                 usedIndexes.add(index);
@@ -268,7 +292,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
-
 
         return quizItem;
     }
