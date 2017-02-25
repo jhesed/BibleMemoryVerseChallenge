@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private Menu menu;
     private int lastVerseId = -1;
     private int totalScore = 0;
-    private final int COUNT_DOWN_TIMER = 5;
+    private final int COUNT_DOWN_TIMER = 10;
     private int blankCount = 2;
 
     // Quiz timer
@@ -78,38 +78,58 @@ public class MainActivity extends AppCompatActivity {
         // Sets Random Button
         btnSubmit = (Button) findViewById(R.id.buttonRandom) ;
 
-        /* SECTION: Events */
+        // Get View Ids
+        titleHeader = (TextView) findViewById(R.id.titleHeader);
+        verseTitle = (TextView) findViewById(R.id.verseTitle);
+        verseContent = (TextView) findViewById(R.id.verseContent);
 
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
+        // Generate random number for random Bible verse
+        Random rand = new Random();
+        int index = rand.nextInt(BibleV1.VERSE_COUNT);
+
+        // Do not use previous verse
+        while (lastVerseId == index) {
+            index = rand.nextInt(BibleV1.VERSE_COUNT);
+        }
+        lastVerseId = index;
+
+        // Update the view with the new Bible Verse
+        verseTitle.setText(R.string.NIV_title);
+        titleHeader.setText(BibleV1.versesQuery.get(index).name);
+        verseContent.setText(BibleV1.versesQuery.get(index).contentEnglish);
+
+        // The Quiz timer before replacing the verse with blanks
+
+        mProgressBar = (ProgressBar)findViewById(R.id.quizTimer);
+        mProgressBar.setProgress(timerValue);
+        mCountDownTimer = new CountDownTimer(5000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timerValue--;  // TODO: Make this smoother
+                mProgressBar.setProgress(timerValue);
+            }
 
             @Override
-            public void onClick(View view) {
+            public void onFinish() {
+                // Reset progress bar
+                timerValue = COUNT_DOWN_TIMER;
 
-                // Get View Ids
-                titleHeader = (TextView) findViewById(R.id.titleHeader);
-                verseTitle = (TextView) findViewById(R.id.titleEngNIV);
-                verseContent = (TextView) findViewById(R.id.contentEngNIV);
+                // Generate the quiz item
+                final QuizItem question = generateQuestion(
+                        titleHeader.getText().toString(),
+                        verseContent.getText().toString());
 
-                // Generate random number for random Bible verse
-                Random rand = new Random();
-                int index = rand.nextInt(BibleV1.VERSE_COUNT);
+                // Replace the strings with the corresponding question
+                // Don't do anything with verse title as of now
+                //titleHeader.setText();
+                verseContent.setText(question.question);
 
-                // Do not use previous verse
-                while (lastVerseId == index) {
-                    index = rand.nextInt(BibleV1.VERSE_COUNT);
-                }
-                lastVerseId = index;
-
-                // Update the view with the new Bible Verse
-                verseTitle.setText(R.string.NIV_title);
-                titleHeader.setText(BibleV1.versesQuery.get(index).name);
-                verseContent.setText(BibleV1.versesQuery.get(index).contentEnglish);
-
-                // The Quiz timer before replacing the verse with blanks
+                // Fire the timer again. This time, the user should input
+                // his/her answers
 
                 mProgressBar = (ProgressBar)findViewById(R.id.quizTimer);
                 mProgressBar.setProgress(timerValue);
-                mCountDownTimer = new CountDownTimer(5000,1000) {
+                mCountDownTimer = new CountDownTimer(10000,500) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         timerValue--;  // TODO: Make this smoother
@@ -118,57 +138,23 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFinish() {
-                        // Reset progress bar
-                        timerValue = COUNT_DOWN_TIMER;
-
-                        // Generate the quiz item
-                        final QuizItem question = generateQuestion(
-                                titleHeader.getText().toString(),
-                                verseContent.getText().toString());
-
-                        // Replace the strings with the corresponding question
-                        // Don't do anything with verse title as of now
-                        //titleHeader.setText();
-                        verseContent.setText(question.question);
-
-                        // Fire the timer again. This time, the user should input
-                        // his/her answers
-
-                        mProgressBar = (ProgressBar)findViewById(R.id.quizTimer);
-                        mProgressBar.setProgress(timerValue);
-                        mCountDownTimer = new CountDownTimer(5000,1000) {
-                            @Override
-                            public void onTick(long millisUntilFinished) {
-                                timerValue--;  // TODO: Make this smoother
-                                mProgressBar.setProgress(timerValue);
-                            }
-
-                            @Override
-                            public void onFinish() {
-                                String userAnswer1 = ((EditText)findViewById(R.id.answer1)).toString();
-                                String userAnswer2 = ((EditText)findViewById(R.id.answer1)).toString();
-
-                                if (userAnswer1 == question.answers[0] && userAnswer2 == question.answers[1]) {
-                                    verseContent = (TextView) findViewById(R.id.scoreValue);
-                                    totalScore ++;
-                                    verseContent.setText(totalScore);
-                                    timerValue = COUNT_DOWN_TIMER;
-                                }
-                                else {
-                                    // Load home screen with game over
-                                    Intent intent = new Intent(MainActivity.this, HomeScreen.class);
-                                    intent.putExtra("isGameOver", true);
-                                    startActivity(intent);
-                                }
-                            }
-                        };
-                        mCountDownTimer.start();
+                        checkAnswer(question);
                     }
                 };
                 mCountDownTimer.start();
+            }
+        };
+        mCountDownTimer.start();
 
-                }
-    });
+        /* SECTION: Events */
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+//                checkAnswer(question);
+            }
+        });
     }
 
     @Override
@@ -188,7 +174,23 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void checkAnswer(QuizItem question) {
+        String userAnswer1 = ((EditText)findViewById(R.id.answer1)).toString();
+        String userAnswer2 = ((EditText)findViewById(R.id.answer1)).toString();
 
+        if (userAnswer1 == question.answers[0] && userAnswer2 == question.answers[1]) {
+            verseContent = (TextView) findViewById(R.id.scoreValue);
+            totalScore ++;
+            verseContent.setText(totalScore);
+            timerValue = COUNT_DOWN_TIMER;
+        }
+        else {
+            // Load home screen with game over
+            Intent intent = new Intent(MainActivity.this, HomeScreen.class);
+            intent.putExtra("isGameOver", true);
+            startActivity(intent);
+        }
+    }
     private void showAboutDialog() {
         /**
         Displays dialog box of developer information
