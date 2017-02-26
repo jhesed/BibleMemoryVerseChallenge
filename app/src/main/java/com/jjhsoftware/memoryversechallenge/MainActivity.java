@@ -40,18 +40,19 @@ public class MainActivity extends AppCompatActivity {
     private TextView verseTitle;
     private TextView verseContent;
     private TextView scoreValue;
-    private TextView answerField1;
-    private TextView answerField2;
+    private EditText answerField1;
+    private EditText answerField2;
     private Menu menu;
     private int lastVerseId = -1;
     private int totalScore = 0;
     private final int COUNT_DOWN_TIMER = 7;
     private int blankCount = 2;
+    private int round = 1;
 
     // Quiz timer
     ProgressBar mProgressBar;
     CountDownTimer mCountDownTimer;
-    int timerValue = COUNT_DOWN_TIMER;
+    int timerValue = 7;
 
     public static final String TAG = "MainActivity";
 
@@ -81,18 +82,25 @@ public class MainActivity extends AppCompatActivity {
         // Sets Random Button
         btnSubmit = (Button) findViewById(R.id.buttonRandom) ;
 
-        while (BibleV1.VERSE_COUNT > 0) {
-            play();
-        }
+        play();
     }
 
     private void play() {
-        // Get View Ids
-        titleHeader = (TextView) findViewById(R.id.titleHeader);
+
+        // Re-initialize progress bar
+        timerValue = 7;
+
+        // Get View IDs
+
         verseTitle = (TextView) findViewById(R.id.verseTitle);
         verseContent = (TextView) findViewById(R.id.verseContent);
         answerField1 = (EditText) findViewById(R.id.answer1);
         answerField2 = (EditText) findViewById(R.id.answer2);
+
+        // Hide first the answer fields and sumbit button while the progress bar is ticking
+        answerField1.setVisibility(View.GONE);
+        answerField2.setVisibility(View.GONE);
+        btnSubmit.setVisibility(View.GONE);
 
         // Generate random number for random Bible verse
         Random rand = new Random();
@@ -104,15 +112,8 @@ public class MainActivity extends AppCompatActivity {
         }
         lastVerseId = index;
 
-        // Update the view with the new Bible Verse
-        titleHeader.setText(R.string.NIV_title);
         verseTitle.setText(BibleV1.versesQuery.get(index).name);
         verseContent.setText(BibleV1.versesQuery.get(index).contentEnglish);
-
-        // Hide first the answer fields and sumbit button while the progress bar is ticking
-        answerField1.setVisibility(View.GONE);
-        answerField2.setVisibility(View.GONE);
-        btnSubmit.setVisibility(View.GONE);
 
         // Remove verse from questions, and update the count
         BibleV1.VERSE_COUNT--;
@@ -161,9 +162,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         checkAnswer(question);
-
-                        // Reset progress bar
-                        timerValue = COUNT_DOWN_TIMER;
                     }
                 });
 
@@ -196,14 +194,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkAnswer(QuizItem question) {
-        String userAnswer1 = ((EditText)findViewById(R.id.answer1)).toString();
-        String userAnswer2 = ((EditText)findViewById(R.id.answer1)).toString();
+        String userAnswer1 = ((EditText)findViewById(R.id.answer1)).getText().toString();
+        String userAnswer2 = ((EditText)findViewById(R.id.answer2)).getText().toString();
 
-        if (userAnswer1 == question.answers.get(0) && userAnswer2 == question.answers.get(1)) {
-            verseContent = (TextView) findViewById(R.id.scoreValue);
+        Log.d(TAG, "_________________________ " + userAnswer1 + " == " +  question.answers.get(0));
+        Log.d(TAG, "_________________________ " + userAnswer2 + " == " +  question.answers.get(1));
+
+        if (userAnswer1.toLowerCase().trim() == question.answers.get(0).toLowerCase().trim() &&
+                userAnswer2.toLowerCase().trim() == question.answers.get(1).toLowerCase().trim()) {
+            scoreValue = (TextView) findViewById(R.id.scoreValue);
             totalScore ++;
             scoreValue.setText(totalScore);
-            timerValue = COUNT_DOWN_TIMER;
+            timerValue = 7;
+
+            // Play again
+            if (round < BibleV1.VERSE_COUNT) {
+                round++;
+                play();
+            }
 
         }
         else {
@@ -246,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
         * This class will hold the question and answer for each item
         * */
         String question;
-        ArrayList<String> answers = new ArrayList<String>();
+        ArrayList<String> answers;
     }
 
     private QuizItem generateQuestion(String title, String verse) {
@@ -263,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Integer> usedIndexes = new ArrayList<Integer>();
 
         QuizItem quizItem = new QuizItem();
+        quizItem.answers = new ArrayList<String>();
 
         // Generate quiz questions and answers
         int i = 0;

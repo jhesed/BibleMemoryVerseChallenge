@@ -22,15 +22,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/linearLayout">
-            <TextView
-                android:id="@+id/titleHeader"
-                android:text="@string/god_loves_you"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textColor="@color/colorHeader"
-                android:layout_marginTop="20dp"
-                android:textSize="25sp" />
 
             <!-- GAME OVER TEXT -->
 
@@ -52,7 +43,7 @@
             <TextView
                 android:id="@+id/instructionTitle"
                 android:text="Instructions: "
-                android:textColor="@color/colorText"
+                android:textColor="@color/colorHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -103,6 +94,24 @@
                 android:paddingRight="5dp"
                 android:textStyle="italic"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Filipino"
+                    android:id="@+id/choiceFilipino" />
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="English"
+                    android:id="@+id/choiceEnglish" />
+
+            </LinearLayout>
 
             <Button
                 android:layout_width="101dp"

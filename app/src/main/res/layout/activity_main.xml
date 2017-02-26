@@ -22,15 +22,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/linearLayout">
-                <TextView
-                    android:id="@+id/titleHeader"
-                    android:text="@string/god_loves_you"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="@color/colorHeader"
-                    android:layout_marginTop="20dp"
-                    android:textSize="25sp" />
 
             <!-- SCORE -->
 
@@ -63,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/quizTimer"
                     android:layout_gravity="center_horizontal"
-                    android:max="10"
+                    android:max="7"
                     android:progress="7"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
@@ -74,7 +65,7 @@
                 <TextView
                     android:id="@+id/verseTitle"
                     android:text="@string/prayer"
-                    android:textColor="@color/colorText"
+                    android:textColor="@color/colorHeader"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -103,15 +94,14 @@
                     android:id="@+id/answer1"
                     android:layout_gravity="center"
                     android:textAlignment="center"
-                    android:textColor="#0d0c0c"
+                    android:textColor="#F7DC6F"
                     android:textColorHint="#F7DC6F"
                     android:layout_marginBottom="15dp"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:hint="Your answer for 1st blank"
                     android:visibility="gone"
-                    android:backgroundTint="#FFFFFF"
-                    android:textIsSelectable="true" />
+                    android:backgroundTint="#FFFFFF"/>
 
                 <EditText
                     android:layout_width="match_parent"
@@ -119,15 +109,14 @@
                     android:id="@+id/answer2"
                     android:layout_gravity="center"
                     android:textAlignment="center"
-                    android:textColor="#0d0c0c"
+                    android:textColor="#F7DC6F"
                     android:textColorHint="#F7DC6F"
                     android:layout_marginBottom="15dp"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:visibility="gone"
                     android:hint="Your answer for 2nd blank"
-                    android:backgroundTint="#FFFFFF"
-                    android:textIsSelectable="true" />
+                    android:backgroundTint="#FFFFFF"/>
 
                 <Button
                     android:layout_width="101dp"
