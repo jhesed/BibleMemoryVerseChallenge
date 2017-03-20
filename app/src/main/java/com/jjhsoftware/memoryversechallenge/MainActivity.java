@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 //import com.google.android.gms.ads.AdRequest;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private final int COUNT_DOWN_TIMER = 7;
     private int blankCount = 2;
     private int round = 1;
+    private int gameLanguage; // Language to be used in game. 1 for English, 2 for Filipino
 
     // Quiz timer
     ProgressBar mProgressBar;
@@ -80,7 +82,13 @@ public class MainActivity extends AppCompatActivity {
         BibleV1.generateQuery();
 
         // Sets Random Button
-        btnSubmit = (Button) findViewById(R.id.buttonRandom) ;
+        btnSubmit = (Button) findViewById(R.id.buttonRandom);
+
+        // Determine intents
+        Bundle b = getIntent().getExtras();
+        if (b != null) {
+            gameLanguage = b.getInt("gameLanguage");
+        }
 
         play();
     }
@@ -113,7 +121,16 @@ public class MainActivity extends AppCompatActivity {
         lastVerseId = index;
 
         verseTitle.setText(BibleV1.versesQuery.get(index).name);
-        verseContent.setText(BibleV1.versesQuery.get(index).contentEnglish);
+
+        if (gameLanguage == 1) {
+            verseContent.setText(BibleV1.versesQuery.get(index).contentFilipino);
+        }
+        else if (gameLanguage == 2) {
+            verseContent.setText(BibleV1.versesQuery.get(index).contentEnglish);
+        }
+        else {
+            Log.d(TAG, "____ELSE______________: ");
+        }
 
         // Remove verse from questions, and update the count
         BibleV1.VERSE_COUNT--;
@@ -164,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
                         checkAnswer(question);
                     }
                 });
-
             }
         };
         mCountDownTimer.start();
@@ -197,11 +213,9 @@ public class MainActivity extends AppCompatActivity {
         String userAnswer1 = ((EditText)findViewById(R.id.answer1)).getText().toString();
         String userAnswer2 = ((EditText)findViewById(R.id.answer2)).getText().toString();
 
-        Log.d(TAG, "_________________________ " + userAnswer1 + " == " +  question.answers.get(0));
-        Log.d(TAG, "_________________________ " + userAnswer2 + " == " +  question.answers.get(1));
+        if (userAnswer1.toLowerCase().trim() == question.answers.get(1).toLowerCase().trim() &&
+                userAnswer2.toLowerCase().trim() == question.answers.get(0).toLowerCase().trim()) {
 
-        if (userAnswer1.toLowerCase().trim() == question.answers.get(0).toLowerCase().trim() &&
-                userAnswer2.toLowerCase().trim() == question.answers.get(1).toLowerCase().trim()) {
             scoreValue = (TextView) findViewById(R.id.scoreValue);
             totalScore ++;
             scoreValue.setText(totalScore);
@@ -215,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
         else {
+
             // Load home screen with game over
             Intent intent = new Intent(MainActivity.this, HomeScreen.class);
             intent.putExtra("isGameOver", true);
@@ -301,7 +316,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
-
         return quizItem;
     }
 

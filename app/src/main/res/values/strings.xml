@@ -22,4 +22,6 @@
     <string name="NIV_title">NIV</string>
     <string name="MBB_title">MBB</string>
     <string name="start">Start</string>
+    <string name="radioFilipino">Filipino</string>
+    <string name="radioEnglish">English</string>
 </resources>

@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 //import com.google.android.gms.ads.AdRequest;
@@ -30,6 +31,10 @@ public class HomeScreen extends AppCompatActivity {
     private Menu menu;
     private Button btnStart;
     private TextView gameOver;
+
+    private RadioGroup radioGroupLanguage; // value in Filipino/English
+    private int gameLanguage; // 1 for english, 2 for filipino
+    private int selectedLanguage; // Selected language
 
     public static final String TAG = "HomeScreenActivity";
 
@@ -67,6 +72,19 @@ public class HomeScreen extends AppCompatActivity {
         // Sets Random Button
         btnStart = (Button) findViewById(R.id.startGame) ;
 
+        // Determines which langunage will be used in the game
+        radioGroupLanguage = (RadioGroup) findViewById(R.id.choiceLanguange);
+        selectedLanguage = radioGroupLanguage.getCheckedRadioButtonId();
+
+        if (selectedLanguage == R.id.choiceFilipino) {
+            // English
+            gameLanguage = 1;
+        }
+        else {
+            // Filipino
+            gameLanguage = 2;
+        }
+
         /* SECTION: Events */
 
         btnStart.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +93,7 @@ public class HomeScreen extends AppCompatActivity {
             public void onClick(View view) {
                 // Start the actual game
                 Intent intent = new Intent(HomeScreen.this, MainActivity.class);
+                intent.putExtra("gameLanguage", gameLanguage);
                 startActivity(intent);
             }
         });
